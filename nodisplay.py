@@ -7,25 +7,25 @@ if os.path.exists(libdir):
     sys.path.append(libdir)
 
 import logging
-from waveshare_epd import epd2in7 # import the display drivers
+#from waveshare_epd import epd2in7 # import the display drivers
 import threading
 import time
 from datetime import datetime
 import requests # pip3 install requests
 from PIL import Image,ImageDraw,ImageFont,ImageChops # pip3 install pillow
 import traceback
-from gpiozero import Button # pip3 install gpiozero
+#from gpiozero import Button # pip3 install gpiozero
 from signal import pause
-import epsimplelib
+#import epsimplelib
 import imgkit # pip3 install imgkit
 from string import Template
 
 interval = 20                                 # loop every ? seconds
 
-btn1 = Button(5)                              # assign each button to a variable
-btn2 = Button(6)                              # by passing in the pin number
-btn3 = Button(13)                             # associated with the button
-btn4 = Button(19)                             #
+#btn1 = Button(5)                              # assign each button to a variable
+#btn2 = Button(6)                              # by passing in the pin number
+#btn3 = Button(13)                             # associated with the button
+#btn4 = Button(19)                             #
 
 font24 = ImageFont.truetype('font/Font.ttc', 24)
 font18 = ImageFont.truetype('font/Font.ttc', 18)
@@ -47,13 +47,13 @@ Liveimage = Image.open('pic/liveimage.bmp')
 
 UPDATESTARTED = 0
 
-epd = epd2in7.EPD()
+#epd = epd2in7.EPD()
 
 def loading():
     print('Loading...')
-    eps = epsimplelib.EPScreen('landscape') # eps = e-Ink Paper Screen
-    eps.set_title("Loading...")
-    eps.update_screen()
+#    eps = epsimplelib.EPScreen('landscape') # eps = e-Ink Paper Screen
+#    eps.set_title("Loading...")
+#    eps.update_screen()
 
 def bmpToDisplay(image):
     print('[{}] start update display'.format(datetime.now().strftime('%I:%M:%S %p')))
@@ -64,13 +64,15 @@ def bmpToDisplay(image):
         if Liveimage.size == image.size:
             if ImageChops.difference(Liveimage, image).getbbox() is not None:
                 print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
-                epd.display_4Gray(epd.getbuffer_4Gray(image))
+                image.show()
+#                epd.display_4Gray(epd.getbuffer_4Gray(image))
                 image.save('pic/liveimage.bmp')
             else:
                 print('[{}] SKIPPING display refresh'.format(datetime.now().strftime('%I:%M:%S %p')))
         else:
             print('[{}] = refresh display (different sizes) = '.format(datetime.now().strftime('%I:%M:%S %p')))
-            epd.display_4Gray(epd.getbuffer_4Gray(image))
+            image.show()
+#            epd.display_4Gray(epd.getbuffer_4Gray(image))
 
     print('[{}]  done update display'.format(datetime.now().strftime('%I:%M:%S %p')))
     UPDATESTARTED = 0
@@ -94,7 +96,8 @@ def stringToDisplay(string):
     Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 255: clear the frame
     draw = ImageDraw.Draw(Limage)
     draw.text((35, 35), string, font = font30, fill = GRAY1)
-    epd.display_4Gray(epd.getbuffer_4Gray(Limage))
+    Limage.show()
+#    epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     print('[{}]  done writing text'.format(datetime.now().strftime('%I:%M:%S %p')))
     UPDATESTARTED = 0
     
@@ -106,7 +109,8 @@ def timeToDisplay():
     Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 255: clear the frame
     draw = ImageDraw.Draw(Limage)
     draw.text((5, 5), string, font = font50, fill = GRAY1)
-    epd.display_4Gray(epd.getbuffer_4Gray(Limage))
+    Limage.show()
+#    epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     print('[{}]  done writing text'.format(datetime.now().strftime('%I:%M:%S %p')))
     UPDATESTARTED = 0
     
@@ -203,7 +207,8 @@ def htmlTest():
     
 
 def handleBtnPress(btn):
-    pinNum = btn.pin.number
+    pinNum = btn
+#    pinNum = btn.pin.number
     print('[{0}] Pin {1} received'.format(datetime.now().strftime('%I:%M:%S %p'), pinNum))
 
     if pinNum == 5:
@@ -225,22 +230,22 @@ def startTimer():
 
 def main():
     try:
-#        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG)
 
         loading()
 
-        global epd
-        epd = epd2in7.EPD()
-        epd.Init_4Gray()
+#        global epd
+#        epd = epd2in7.EPD()
+#        epd.Init_4Gray()
 
         # tell the button what to do when pressed
-        btn1.when_pressed = handleBtnPress
+#        btn1.when_pressed = handleBtnPress
         #handleBtnPress(5)
-        btn2.when_pressed = handleBtnPress
+#        btn2.when_pressed = handleBtnPress
         #handleBtnPress(6)
-        btn3.when_pressed = handleBtnPress
+#        btn3.when_pressed = handleBtnPress
         #handleBtnPress(13)
-        btn4.when_pressed = handleBtnPress
+#        btn4.when_pressed = handleBtnPress
         #handleBtnPress(19)
 
         print("Press Ctrl+C to Exit")
@@ -252,7 +257,7 @@ def main():
 
     except KeyboardInterrupt:
         logging.info("ctrl + c:")
-        epd2in7.epdconfig.module_exit()
+#        epd2in7.epdconfig.module_exit()
         threading.Timer(interval, startTimer).cancel()
         exit()
 
