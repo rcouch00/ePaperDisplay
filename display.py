@@ -43,7 +43,7 @@ DEVICE_WIDTH = 176
 DEVICE_HEIGHT = 264
 
 GScaleimage = Image.open('pic/2in7_Scale.bmp')
-bmp = Image.open('pic/working/HashRate.png')
+bmp = Image.open('pic/working/HashRates.png')
 #bmp = Image.open('pic/100x100.bmp')
 Liveimage = Image.open('pic/liveimage.bmp')
 
@@ -80,11 +80,11 @@ def bmpToDisplay(image):
 def drawBMP():
     Himage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 255)
     draw = ImageDraw.Draw(Himage)
-    draw.text((70, 0), 'hello world!', font = font30, fill = 0)
+    #draw.text((70, 0), 'hello world!', font = font30, fill = 0)
     time = datetime.now().strftime('%I:%M')
-    draw.text((35, 135), time, font = font50, fill = 0)
+    draw.text((35, 0), time, font = font50, fill = 0)
     timeDay = datetime.now().strftime('%p')
-    draw.text((175, 135), timeDay, font = font50, fill = 0)
+    draw.text((175, 0), timeDay, font = font50, fill = 0)
     # draw.line((165, 50, 165, 100), fill = 0)
     Himage.paste(bmp, (90,35))
     return Himage
