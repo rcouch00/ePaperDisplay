@@ -33,16 +33,18 @@ font35 = ImageFont.truetype('font/Font.ttc', 35)
 font30 = ImageFont.truetype('font/Bangers-Regular.ttf', 30)
 font50 = ImageFont.truetype('font/digital-7 (mono).ttf', 50)
 
-GRAY1  = 0xff #white
-GRAY2  = 0xC0
-GRAY3  = 0x80 #gray
-GRAY4  = 0x00 #Blackest
+GRAY1  = 0xff #white        #FFFFFF
+GRAY2  = 0xC0               #c0c0c0
+GRAY3  = 0x80 #gray         #808080
+GRAY4  = 0x00 #Blackest     #000000
 
+#swap width and height to use landscape
 DEVICE_WIDTH = 176
 DEVICE_HEIGHT = 264
 
 GScaleimage = Image.open('pic/2in7_Scale.bmp')
-bmp = Image.open('pic/100x100.bmp')
+bmp = Image.open('pic/working/HashRates.png')
+#bmp = Image.open('pic/100x100.bmp')
 Liveimage = Image.open('pic/liveimage.bmp')
 
 UPDATESTARTED = 0
