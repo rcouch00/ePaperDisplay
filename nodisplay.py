@@ -243,7 +243,6 @@ def htmlTest():
     options = {
         'width': DEVICE_HEIGHT,
         'height': DEVICE_WIDTH,
-        'disable-smart-width': '',
         'encoding': 'UTF-8'
     }
     t = Template(body)
