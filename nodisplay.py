@@ -44,6 +44,7 @@ DEVICE_HEIGHT = 264
 
 GScaleimage = Image.open('pic/2in7_Scale.bmp')
 bmp = Image.open('pic/hashrate_test.bmp')
+#bmp = Image.open('pic/Pico_3in7.bmp')
 #bmp = Image.open('pic/100x100.bmp')
 Liveimage = Image.open('pic/liveimage.bmp')
 
@@ -53,20 +54,23 @@ UPDATESTARTED = 0
 
 def loading():
     print('Loading...')
-#    eps = epsimplelib.EPScreen('landscape') # eps = e-Ink Paper Screen
-#    eps.set_title("Loading...")
-#    eps.update_screen()
+    #eps = epsimplelib.EPScreen('landscape') # eps = e-Ink Paper Screen
+    #eps.set_title("Loading...")
+    #eps.update_screen()
+    stringToDisplayCenter('Loading...')
 
 def bmpToDisplay(image):
     print('[{}] start update display'.format(datetime.now().strftime('%I:%M:%S %p')))
     global UPDATESTARTED
     UPDATESTARTED = 1
     global Liveimage
+    #blank = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 255)  # 0 = black, 255 = white: clear the frame
     with Image.open('pic/liveimage.bmp').convert(image.mode) as Liveimage:
         if Liveimage.size == image.size:
             if ImageChops.difference(Liveimage, image).getbbox() is not None:
                 print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
                 image.show()
+#                epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
 #                epd.display_4Gray(epd.getbuffer_4Gray(image))
                 image.save('pic/liveimage.bmp')
             else:
@@ -74,6 +78,7 @@ def bmpToDisplay(image):
         else:
             print('[{}] = refresh display (different sizes) = '.format(datetime.now().strftime('%I:%M:%S %p')))
             image.show()
+#            epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
 #            epd.display_4Gray(epd.getbuffer_4Gray(image))
 
     print('[{}]  done update display'.format(datetime.now().strftime('%I:%M:%S %p')))
@@ -85,18 +90,26 @@ def drawBMP():
     Himage.paste(bmp, (0,0)) #0,37
     #draw.text((70, 0), 'hello world!', font = font30, fill = 0)
     time = datetime.now().strftime('%I:%M')
-    draw.text((35, 0), time, font = font50, fill = 0)
+    draw.text((35, 135), time, font = font50, fill = 0)
     timeDay = datetime.now().strftime('%p')
-    draw.text((175, 0), timeDay, font = font50, fill = 0)
-    draw.line((165, 50, 165, 100), fill = 0)
+    draw.text((175, 135), timeDay, font = font50, fill = 0)
+    #draw.line((165, 50, 165, 100), fill = 0)
     return Himage
 
-def stringToDisplay(string):
+def stringToDisplayCenter(string):
     print('[{}] start writing text'.format(datetime.now().strftime('%I:%M:%S %p')))
     global UPDATESTARTED
     UPDATESTARTED = 1
-    Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 255: clear the frame
+    Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 0 = black, 255 = white: clear the frame
     draw = ImageDraw.Draw(Limage)
+    
+#    w, h = draw.textsize(string, font = font30)
+#    print('W: {0} H: {1}'.format(w,h))
+#    print((DEVICE_HEIGHT-h)/2)
+#    print((DEVICE_WIDTH-w)/2)
+#    draw.text((DEVICE_HEIGHT-h)/2,(DEVICE_WIDTH-w)/2), string, font = font30, fill = GRAY1)
+
+#    draw.text((0,0), string, anchor="mm", font = font30, fill = GRAY1)
     draw.text((35, 35), string, font = font30, fill = GRAY1)
     Limage.show()
 #    epd.display_4Gray(epd.getbuffer_4Gray(Limage))
@@ -108,7 +121,7 @@ def timeToDisplay():
     global UPDATESTARTED
     UPDATESTARTED = 1
     string = datetime.now().strftime('%I:%M')
-    Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 255: clear the frame
+    Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 0 = black, 255 = white: clear the frame
     draw = ImageDraw.Draw(Limage)
     draw.text((5, 5), string, font = font50, fill = GRAY1)
     Limage.show()
@@ -215,11 +228,11 @@ def handleBtnPress(btn):
 
     if pinNum == 5:
         htmlTest()
-        #stringToDisplay('Hello World!\nButton 1')
+        #stringToDisplayCenter('Button 1')
     elif pinNum == 6:
-        stringToDisplay('This is my first \nRPi project.\nButton 2')
+        stringToDisplayCenter('Button 2')
     elif pinNum == 13:
-        stringToDisplay('Hope you liked it \nButton 3')
+        stringToDisplayCenter('Button 3')
     elif pinNum == 19:
         bmpToDisplay(GScaleimage)
  
@@ -234,11 +247,13 @@ def main():
     try:
         logging.basicConfig(level=logging.DEBUG)
 
-        loading()
+        print("Initializing ePaper Display")
 
 #        global epd
 #        epd = epd2in7.EPD()
 #        epd.Init_4Gray()
+        
+        loading()
 
         # tell the button what to do when pressed
 #        btn1.when_pressed = handleBtnPress
@@ -263,7 +278,7 @@ def main():
         threading.Timer(interval, startTimer).cancel()
         exit()
 
-#        Limage = Image.new('L', (epd.height, epd.width), 0)  # 255: clear the frame
+#        Limage = Image.new('L', (epd.height, epd.width), 0)  # 0 = black, 255 = white: clear the frame
 #        draw = ImageDraw.Draw(Limage)
 #        draw.text((40, 110), 'Loading...', font = font18, fill = epd.GRAY1)
 #        draw.line((10, 140, 60, 190), fill = epd.GRAY1)
