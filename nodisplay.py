@@ -28,6 +28,9 @@ if len(sys.argv) == 0:
     btn4 = Button(19)                             #
 elif len(sys.argv) > 0:
     print('Emulation Mode enabled')
+else:
+    print('unknown argument')
+
 
 interval = 20                                 # loop every ? seconds
 
@@ -48,8 +51,6 @@ DEVICE_HEIGHT = 264
 
 GScaleimage = Image.open('pic/2in7_Scale.bmp')
 bmp = Image.open('pic/hashrate_test.bmp')
-#bmp = Image.open('pic/Pico_3in7.bmp')
-#bmp = Image.open('pic/100x100.bmp')
 Liveimage = Image.open('pic/liveimage.bmp')
 
 UPDATESTARTED = 0

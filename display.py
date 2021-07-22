@@ -28,6 +28,8 @@ if len(sys.argv) == 0:
     btn4 = Button(19)                             #
 elif len(sys.argv) > 0:
     print('Emulation Mode enabled')
+else:
+    print('unknown argument')
 
 interval = 20                                 # loop every ? seconds
 
