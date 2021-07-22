@@ -99,7 +99,7 @@ def stringToDisplayCenter(string):
     Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 0 = black, 255 = white: clear the frame
     Limage = drawCrossHairs(Limage)
     draw = ImageDraw.Draw(Limage)
-    draw.text(((DEVICE_HEIGHT/2),(DEVICE_WIDTH/2)), string, anchor="lt", font = font30, fill = GRAY1)
+    draw.text(((DEVICE_HEIGHT/2),(DEVICE_WIDTH/2)), string, anchor="mm", font = font30, fill = GRAY1)
     del draw
     epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     print('[{}]  done writing text'.format(datetime.now().strftime('%I:%M:%S %p')))
