@@ -86,12 +86,10 @@ def drawBMP():
     Himage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 255)
     draw = ImageDraw.Draw(Himage)
     Himage.paste(bmp, (0,0)) #0,37
-    #draw.text((70, 0), 'hello world!', font = font30, fill = 0)
     time = datetime.now().strftime('%I:%M')
     draw.text((35, 135), time, font = font50, fill = 0)
     timeDay = datetime.now().strftime('%p')
     draw.text((175, 135), timeDay, font = font50, fill = 0)
-    #draw.line((165, 50, 165, 100), fill = 0)
     return Himage
 
 def stringToDisplayCenter(string):
@@ -99,9 +97,9 @@ def stringToDisplayCenter(string):
     global UPDATESTARTED
     UPDATESTARTED = 1
     Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 0 = black, 255 = white: clear the frame
-#    Limage = drawCrossHairs(Limage)
+    Limage = drawCrossHairs(Limage)
     draw = ImageDraw.Draw(Limage)
-    draw.text(((DEVICE_HEIGHT/2),(DEVICE_WIDTH/2)), string, anchor="mm", font = font30, fill = GRAY1)
+    draw.text(((DEVICE_HEIGHT/2),(DEVICE_WIDTH/2)), string, anchor="lt", font = font30, fill = GRAY1)
     del draw
     epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     print('[{}]  done writing text'.format(datetime.now().strftime('%I:%M:%S %p')))
