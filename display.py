@@ -63,19 +63,21 @@ def bmpToDisplay(image):
     global UPDATESTARTED
     UPDATESTARTED = 1
     global Liveimage
-    blank = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 255: clear the frame
+    #blank = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 255: clear the frame
     with Image.open('pic/liveimage.bmp').convert(image.mode) as Liveimage:
         if Liveimage.size == image.size:
             if ImageChops.difference(Liveimage, image).getbbox() is not None:
                 print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
-                epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
+                #epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
+                stringToDisplay('processing')
                 epd.display_4Gray(epd.getbuffer_4Gray(image))
                 image.save('pic/liveimage.bmp')
             else:
                 print('[{}] SKIPPING display refresh'.format(datetime.now().strftime('%I:%M:%S %p')))
         else:
             print('[{}] = refresh display (different sizes) = '.format(datetime.now().strftime('%I:%M:%S %p')))
-            epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
+            #epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
+            stringToDisplay('processing')
             epd.display_4Gray(epd.getbuffer_4Gray(image))
 
     print('[{}]  done update display'.format(datetime.now().strftime('%I:%M:%S %p')))
