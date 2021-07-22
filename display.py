@@ -43,8 +43,8 @@ DEVICE_WIDTH = 176
 DEVICE_HEIGHT = 264
 
 GScaleimage = Image.open('pic/2in7_Scale.bmp')
-#bmp = Image.open('pic/working/HashRates.bmp')
-bmp = Image.open('pic/Pico_3in7.bmp')
+bmp = Image.open('pic/hashrate_test.bmp')
+#bmp = Image.open('pic/Pico_3in7.bmp')
 #bmp = Image.open('pic/100x100.bmp')
 Liveimage = Image.open('pic/liveimage.bmp')
 
@@ -63,16 +63,19 @@ def bmpToDisplay(image):
     global UPDATESTARTED
     UPDATESTARTED = 1
     global Liveimage
+    blank = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 255: clear the frame
     with Image.open('pic/liveimage.bmp').convert(image.mode) as Liveimage:
         if Liveimage.size == image.size:
             if ImageChops.difference(Liveimage, image).getbbox() is not None:
                 print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
+                epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
                 epd.display_4Gray(epd.getbuffer_4Gray(image))
                 image.save('pic/liveimage.bmp')
             else:
                 print('[{}] SKIPPING display refresh'.format(datetime.now().strftime('%I:%M:%S %p')))
         else:
             print('[{}] = refresh display (different sizes) = '.format(datetime.now().strftime('%I:%M:%S %p')))
+            epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
             epd.display_4Gray(epd.getbuffer_4Gray(image))
 
     print('[{}]  done update display'.format(datetime.now().strftime('%I:%M:%S %p')))
@@ -84,10 +87,10 @@ def drawBMP():
     Himage.paste(bmp, (0,0)) #0,37
     #draw.text((70, 0), 'hello world!', font = font30, fill = 0)
     time = datetime.now().strftime('%I:%M')
-    draw.text((35, 0), time, font = font50, fill = 0)
+    draw.text((35, 135), time, font = font50, fill = 0)
     timeDay = datetime.now().strftime('%p')
-    draw.text((175, 0), timeDay, font = font50, fill = 0)
-    draw.line((165, 50, 165, 100), fill = 0)
+    draw.text((175, 135), timeDay, font = font50, fill = 0)
+    #draw.line((165, 50, 165, 100), fill = 0)
     return Himage
 
 def stringToDisplay(string):
