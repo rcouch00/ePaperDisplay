@@ -101,20 +101,41 @@ def stringToDisplayCenter(string):
     global UPDATESTARTED
     UPDATESTARTED = 1
     Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 0 = black, 255 = white: clear the frame
+#    Limage = drawCrossHairs(Limage)
     draw = ImageDraw.Draw(Limage)
-    
-#    w, h = draw.textsize(string, font = font30)
-#    print('W: {0} H: {1}'.format(w,h))
-#    print((DEVICE_HEIGHT-h)/2)
-#    print((DEVICE_WIDTH-w)/2)
-#    draw.text((DEVICE_HEIGHT-h)/2,(DEVICE_WIDTH-w)/2), string, font = font30, fill = GRAY1)
-
-#    draw.text((0,0), string, anchor="mm", font = font30, fill = GRAY1)
-    draw.text((35, 35), string, font = font30, fill = GRAY1)
+    draw.text(((DEVICE_HEIGHT/2),(DEVICE_WIDTH/2)), string, anchor="mm", font = font30, fill = GRAY1)
+    del draw
     Limage.show()
 #    epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     print('[{}]  done writing text'.format(datetime.now().strftime('%I:%M:%S %p')))
     UPDATESTARTED = 0
+
+def drawCrossHairs(Limage):
+    imWidth, imHeight = Limage.size
+    chLen = int(min(imWidth, imHeight) / 6)
+    gapLen = int(min(imWidth, imHeight) / 60)
+    lineWidth = int(max(imWidth, imHeight) / 500)
+    lines = []
+    l = (imWidth / 2 - gapLen - chLen, imHeight /
+         2, imWidth / 2 - gapLen, imHeight / 2)
+    lines.append(l)
+    l = (imWidth / 2 + gapLen, imHeight /
+         2, imWidth / 2 + gapLen + chLen, imHeight / 2)
+    lines.append(l)
+    l = (imWidth / 2, imHeight /
+         2 - gapLen - chLen, imWidth / 2, imHeight / 2 - gapLen)
+    lines.append(l)
+    l = (imWidth / 2, imHeight /
+         2 + gapLen, imWidth / 2, imHeight / 2 + gapLen + chLen)
+    lines.append(l)
+    
+    # GENERATE THE DRAW OBJECT AND DRAW THE CROSSHAIRS
+    draw = ImageDraw.Draw(Limage)
+    draw.line(l, fill=GRAY1, width=lineWidth)
+    for l in lines:
+        draw.line(l, fill=GRAY1, width=lineWidth)
+    del draw
+    return Limage
     
 def timeToDisplay():
     print('[{}] start writing text'.format(datetime.now().strftime('%I:%M:%S %p')))
