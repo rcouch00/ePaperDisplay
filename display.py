@@ -76,8 +76,8 @@ def bmpToDisplay(image):
     with Image.open('pic/liveimage.bmp').convert(image.mode) as Liveimage:
         if Liveimage.size == image.size:
             if ImageChops.difference(Liveimage, image).getbbox() is not None:
-                print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
                 if len(sys.argv) == 0:
+                    print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
                     epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
                     epd.display_4Gray(epd.getbuffer_4Gray(image))
                     image.save('pic/liveimage.bmp')
@@ -86,12 +86,14 @@ def bmpToDisplay(image):
             else:
                 print('[{}] SKIPPING display refresh'.format(datetime.now().strftime('%I:%M:%S %p')))
         else:
-            print('[{}] = refresh display (different sizes) = '.format(datetime.now().strftime('%I:%M:%S %p')))
             if len(sys.argv) == 0:
+                print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
                 epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
                 epd.display_4Gray(epd.getbuffer_4Gray(image))
             else:
                 image.show()
+    del image
+    del Liveimage
     print('[{}]  done update display'.format(datetime.now().strftime('%I:%M:%S %p')))
     UPDATESTARTED = 0
 
@@ -103,6 +105,7 @@ def drawBMP():
     draw.text((35, 135), time, font = font50, fill = 0)
     timeDay = datetime.now().strftime('%p')
     draw.text((175, 135), timeDay, font = font50, fill = 0)
+    del draw
     return Himage
 
 def stringToDisplayCenter(string):
@@ -110,7 +113,7 @@ def stringToDisplayCenter(string):
     global UPDATESTARTED
     UPDATESTARTED = 1
     Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 0 = black, 255 = white: clear the frame
-    Limage = drawCrossHairs(Limage)
+    #Limage = drawCrossHairs(Limage)
     draw = ImageDraw.Draw(Limage)
     draw.text(((DEVICE_HEIGHT/2),(DEVICE_WIDTH/2)), string, anchor="mm", font = font30, fill = GRAY1)
     del draw
@@ -156,6 +159,7 @@ def timeToDisplay():
     Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 0 = black, 255 = white: clear the frame
     draw = ImageDraw.Draw(Limage)
     draw.text((5, 5), string, font = font50, fill = GRAY1)
+    del draw
     if len(sys.argv) == 0:
         epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     else:
@@ -250,6 +254,7 @@ def htmlTest():
     imgkit.from_string(t.substitute(table=wallets, time=datetime.now().strftime('%I:%M %p')), 'pic/out.bmp', options=options)
     with Image.open('pic/out.bmp').convert(Liveimage.mode) as image:
         bmpToDisplay(image);
+    del image
     print('[{}]  done html test'.format(datetime.now().strftime('%I:%M:%S %p')))
     UPDATESTARTED = 0
     
@@ -257,9 +262,9 @@ def htmlTest():
 def handleBtnPress(btn):
     if len(sys.argv) == 0:
         pinNum = btn.pin.number
+        print('[{0}] Pin {1} received'.format(datetime.now().strftime('%I:%M:%S %p'), pinNum))
     else:
         pinNum = btn
-    print('[{0}] Pin {1} received'.format(datetime.now().strftime('%I:%M:%S %p'), pinNum))
 
     if pinNum == 5:
         htmlTest()
@@ -281,6 +286,8 @@ def startTimer():
 def main():
     try:
         if len(sys.argv) == 0:
+            logging.basicConfig(level=logging.DEBUG)
+        else:
             logging.basicConfig(level=logging.DEBUG)
 
         print("Initializing ePaper Display")
