@@ -17,20 +17,23 @@ from signal import pause
 import imgkit # pip3 install imgkit
 from string import Template
 
-if len(sys.argv) == 0:
+if len(sys.argv) == 1:
     print('Hardware Mode enabled')
-    from waveshare_epd import epd2in7 # import the display drivers
-    import epsimplelib
-    from gpiozero import Button # pip3 install gpiozero
-    btn1 = Button(5)                              # assign each button to a variable
-    btn2 = Button(6)                              # by passing in the pin number
-    btn3 = Button(13)                             # associated with the button
-    btn4 = Button(19)                             #
-elif len(sys.argv) > 0:
-    print('Emulation Mode enabled')
+    try:
+        from waveshare_epd import epd2in7 # import the display drivers
+        import epsimplelib
+        from gpiozero import Button # pip3 install gpiozero
+        btn1 = Button(5)                              # assign each button to a variable
+        btn2 = Button(6)                              # by passing in the pin number
+        btn3 = Button(13)                             # associated with the button
+        btn4 = Button(19)                             #
+    except:
+        print('===============================================')
+        print('Perhaps enable Emulation Mode:')
+        print('Example: python3 display.py emu')
+        print('===============================================')
 else:
-    print('unknown argument')
-
+    print('Emulation Mode enabled')
 
 interval = 20                                 # loop every ? seconds
 
@@ -70,13 +73,12 @@ def bmpToDisplay(image):
     global UPDATESTARTED
     UPDATESTARTED = 1
     global Liveimage
-    if len(sys.argv) == 0:
-        blank = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 255)  # 0 = black, 255 = white: clear the frame
+    blank = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 255)  # 0 = black, 255 = white: clear the frame
     with Image.open('pic/liveimage.bmp').convert(image.mode) as Liveimage:
         if Liveimage.size == image.size:
             if ImageChops.difference(Liveimage, image).getbbox() is not None:
-                print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
-                if len(sys.argv) == 0:
+                if len(sys.argv) == 1:
+                    print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
                     epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
                     epd.display_4Gray(epd.getbuffer_4Gray(image))
                     image.save('pic/liveimage.bmp')
@@ -85,8 +87,8 @@ def bmpToDisplay(image):
             else:
                 print('[{}] SKIPPING display refresh'.format(datetime.now().strftime('%I:%M:%S %p')))
         else:
-            print('[{}] = refresh display (different sizes) = '.format(datetime.now().strftime('%I:%M:%S %p')))
-            if len(sys.argv) == 0:
+            if len(sys.argv) == 1:
+                print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
                 epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
                 epd.display_4Gray(epd.getbuffer_4Gray(image))
             else:
@@ -102,6 +104,7 @@ def drawBMP():
     draw.text((35, 135), time, font = font50, fill = 0)
     timeDay = datetime.now().strftime('%p')
     draw.text((175, 135), timeDay, font = font50, fill = 0)
+    del draw
     return Himage
 
 def stringToDisplayCenter(string):
@@ -113,7 +116,7 @@ def stringToDisplayCenter(string):
     draw = ImageDraw.Draw(Limage)
     draw.text(((DEVICE_HEIGHT/2),(DEVICE_WIDTH/2)), string, anchor="mm", font = font30, fill = GRAY1)
     del draw
-    if len(sys.argv) == 0:
+    if len(sys.argv) == 1:
         epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     else:
         Limage.show()
@@ -155,7 +158,8 @@ def timeToDisplay():
     Limage = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 0)  # 0 = black, 255 = white: clear the frame
     draw = ImageDraw.Draw(Limage)
     draw.text((5, 5), string, font = font50, fill = GRAY1)
-    if len(sys.argv) == 0:
+    del draw
+    if len(sys.argv) == 1:
         epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     else:
         Limage.show()
@@ -254,11 +258,11 @@ def htmlTest():
     
 
 def handleBtnPress(btn):
-    if len(sys.argv) == 0:
+    if len(sys.argv) == 1:
         pinNum = btn.pin.number
+        print('[{0}] Pin {1} received'.format(datetime.now().strftime('%I:%M:%S %p'), pinNum))
     else:
         pinNum = btn
-    print('[{0}] Pin {1} received'.format(datetime.now().strftime('%I:%M:%S %p'), pinNum))
 
     if pinNum == 5:
         htmlTest()
@@ -279,12 +283,13 @@ def startTimer():
 
 def main():
     try:
-        if len(sys.argv) == 0:
+        if len(sys.argv) == 1:
+            logging.basicConfig(level=logging.ERROR) # show only error msgs,
+        else:
             logging.basicConfig(level=logging.DEBUG)
 
-        print("Initializing ePaper Display")
-
-        if len(sys.argv) == 0:
+        if len(sys.argv) == 1:
+            print("Initializing ePaper Display")
             global epd
             epd = epd2in7.EPD()
             epd.Init_4Gray()
@@ -292,7 +297,7 @@ def main():
         loading()
 
         # tell the button what to do when pressed
-        if len(sys.argv) == 0:
+        if len(sys.argv) == 1:
             btn1.when_pressed = handleBtnPress
             btn2.when_pressed = handleBtnPress
             btn3.when_pressed = handleBtnPress
@@ -310,7 +315,7 @@ def main():
 
     except KeyboardInterrupt:
         logging.info("ctrl + c:")
-        if len(sys.argv) == 0:
+        if len(sys.argv) == 1:
             epd2in7.epdconfig.module_exit()
         threading.Timer(interval, startTimer).cancel()
         exit()
