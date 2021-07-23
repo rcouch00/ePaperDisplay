@@ -75,8 +75,7 @@ def bmpToDisplay(image):
     global UPDATESTARTED
     UPDATESTARTED = 1
     global Liveimage
-    if len(sys.argv) == 0:
-        blank = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 255)  # 0 = black, 255 = white: clear the frame
+    blank = Image.new('L', (DEVICE_HEIGHT, DEVICE_WIDTH), 255)  # 0 = black, 255 = white: clear the frame
     with Image.open('pic/liveimage.bmp').convert(image.mode) as Liveimage:
         if Liveimage.size == image.size:
             if ImageChops.difference(Liveimage, image).getbbox() is not None:
