@@ -95,8 +95,6 @@ def bmpToDisplay(image):
                 epd.display_4Gray(epd.getbuffer_4Gray(image))
             else:
                 image.show()
-    del image
-    del Liveimage
     print('[{}]  done update display'.format(datetime.now().strftime('%I:%M:%S %p')))
     UPDATESTARTED = 0
 
@@ -257,7 +255,6 @@ def htmlTest():
     imgkit.from_string(t.substitute(table=wallets, time=datetime.now().strftime('%I:%M %p')), 'pic/out.bmp', options=options)
     with Image.open('pic/out.bmp').convert(Liveimage.mode) as image:
         bmpToDisplay(image);
-    del image
     print('[{}]  done html test'.format(datetime.now().strftime('%I:%M:%S %p')))
     UPDATESTARTED = 0
     
