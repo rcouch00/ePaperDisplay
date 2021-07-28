@@ -17,7 +17,9 @@ from signal import pause
 import imgkit # pip3 install imgkit
 from string import Template
 
-if len(sys.argv) == 1:
+HARDWARE_MODE = (bool(len(sys.argv)-1) == 0)
+
+if (HARDWARE_MODE):
     print('Hardware Mode enabled')
     try:
         from waveshare_epd import epd2in7 # import the display drivers
@@ -58,7 +60,7 @@ Liveimage = Image.open('pic/liveimage.bmp')
 
 UPDATESTARTED = 0
 
-if len(sys.argv) == 0:
+if (HARDWARE_MODE):
     epd = epd2in7.EPD()
 
 def loading():
@@ -77,7 +79,7 @@ def bmpToDisplay(image):
     with Image.open('pic/liveimage.bmp').convert(image.mode) as Liveimage:
         if Liveimage.size == image.size:
             if ImageChops.difference(Liveimage, image).getbbox() is not None:
-                if len(sys.argv) == 1:
+                if (HARDWARE_MODE):
                     print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
                     epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
                     epd.display_4Gray(epd.getbuffer_4Gray(image))
@@ -87,7 +89,7 @@ def bmpToDisplay(image):
             else:
                 print('[{}] SKIPPING display refresh'.format(datetime.now().strftime('%I:%M:%S %p')))
         else:
-            if len(sys.argv) == 1:
+            if (HARDWARE_MODE):
                 print('[{}] = refresh display = '.format(datetime.now().strftime('%I:%M:%S %p')))
                 epd.display_4Gray(epd.getbuffer_4Gray(blank)) #clear the screen
                 epd.display_4Gray(epd.getbuffer_4Gray(image))
@@ -116,7 +118,7 @@ def stringToDisplayCenter(string):
     draw = ImageDraw.Draw(Limage)
     draw.text(((DEVICE_HEIGHT/2),(DEVICE_WIDTH/2)), string, anchor="mm", font = font30, fill = GRAY1)
     del draw
-    if len(sys.argv) == 1:
+    if (HARDWARE_MODE):
         epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     else:
         Limage.show()
@@ -159,7 +161,7 @@ def timeToDisplay():
     draw = ImageDraw.Draw(Limage)
     draw.text((5, 5), string, font = font50, fill = GRAY1)
     del draw
-    if len(sys.argv) == 1:
+    if (HARDWARE_MODE):
         epd.display_4Gray(epd.getbuffer_4Gray(Limage))
     else:
         Limage.show()
@@ -258,7 +260,7 @@ def htmlTest():
     
 
 def handleBtnPress(btn):
-    if len(sys.argv) == 1:
+    if (HARDWARE_MODE):
         pinNum = btn.pin.number
         print('[{0}] Pin {1} received'.format(datetime.now().strftime('%I:%M:%S %p'), pinNum))
     else:
@@ -283,21 +285,19 @@ def startTimer():
 
 def main():
     try:
-        if len(sys.argv) == 1:
+        if (HARDWARE_MODE):
             logging.basicConfig(level=logging.ERROR) # show only error msgs,
-        else:
-            logging.basicConfig(level=logging.DEBUG)
-
-        if len(sys.argv) == 1:
             print("Initializing ePaper Display")
             global epd
             epd = epd2in7.EPD()
             epd.Init_4Gray()
+        else:
+            logging.basicConfig(level=logging.DEBUG)
         
         loading()
 
         # tell the button what to do when pressed
-        if len(sys.argv) == 1:
+        if (HARDWARE_MODE):
             btn1.when_pressed = handleBtnPress
             btn2.when_pressed = handleBtnPress
             btn3.when_pressed = handleBtnPress
@@ -315,7 +315,7 @@ def main():
 
     except KeyboardInterrupt:
         logging.info("ctrl + c:")
-        if len(sys.argv) == 1:
+        if (HARDWARE_MODE):
             epd2in7.epdconfig.module_exit()
         threading.Timer(interval, startTimer).cancel()
         exit()
